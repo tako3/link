@@ -37,11 +37,11 @@ void IRAM_ATTR timer_group0_isr(void* userParam)
 
 void timerGroup0Init(int timerPeriodUS, void* userParam)
 {
-  timer_config_t config = {.alarm_en = true,
-    .counter_en = false,
+  timer_config_t config = {.alarm_en = TIMER_ALARM_EN,
+    .counter_en = TIMER_PAUSE,
     .intr_type = TIMER_INTR_LEVEL,
     .counter_dir = TIMER_COUNT_UP,
-    .auto_reload = true,
+    .auto_reload = TIMER_AUTORELOAD_EN,
     .divider = 80};
 
   timer_init(TIMER_GROUP_0, TIMER_0, &config);

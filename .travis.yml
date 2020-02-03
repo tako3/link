@@ -100,7 +100,7 @@ matrix:
         apt:
           sources: ['llvm-toolchain-trusty-5.0', 'ubuntu-toolchain-r-test']
           packages: ['wget', 'flex', 'bison', 'gperf', 'python-pip', 'ninja-build', 'ccache']
-      env: IDF_PATH=${HOME}/esp_idf COMPILER=clang++-5.0 WORDSIZE=64 CONFIGURATION=Debug AUDIO=Alsa
+      env: IDF_RELEASE=v4.0-rc IDF_PATH=${HOME}/esp-idf-${IDF_RELEASE} COMPILER=clang
 
     # Code formatting verification
     - os: linux
@@ -138,10 +138,10 @@ install:
 script:
   - |
     set -e
-    if [ "${IDF_PATH}" = "${HOME}/esp_idf" ]; then
+    if [ ! -z "$IDF_PATH" ]; then
       mkdir -p ${IDF_PATH}
-      wget -P ${IDF_PATH} https://github.com/espressif/esp-idf/releases/download/v4.0-beta2/esp-idf-v4.0-beta2.zip
-      unzip -jo ${IDF_PATH}/esp-idf-v4.0-beta2.zip -d ${IDF_PATH}
+      wget -P ${HOME} https://github.com/espressif/esp-idf/releases/download/${IDF_RELEASE}/esp-idf-${IDF_RELEASE}.zip
+      unzip -o ${HOME}/esp-idf-${IDF_RELEASE}.zip -d ${HOME}
       ${IDF_PATH}/install.sh
       . ${IDF_PATH}/export.sh
       . ${IDF_PATH}/add_path.sh
@@ -175,11 +175,13 @@ script:
   # compiled by brew and this takes way too much time on the build server.
   - |
     set -e
-    if [ "$TRAVIS_OS_NAME" = "linux" ]; then
-      python ci/run-tests.py --target LinkCoreTest --valgrind
-      python ci/run-tests.py --target LinkDiscoveryTest --valgrind
-    else
-      python ci/run-tests.py --target LinkCoreTest
-      python ci/run-tests.py --target LinkDiscoveryTest
+    if  [ -z "$IDF_PATH" ]; then
+      if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+        python ci/run-tests.py --target LinkCoreTest --valgrind
+        python ci/run-tests.py --target LinkDiscoveryTest --valgrind
+      else
+        python ci/run-tests.py --target LinkCoreTest
+        python ci/run-tests.py --target LinkDiscoveryTest
+      fi
     fi
     set +e

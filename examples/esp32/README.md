@@ -1,6 +1,6 @@
 # *E X P E R I M E N T A L* 
 
-*Tested with esp-idf v4.0-beta2*
+*Tested with esp-idf [v4.0-beta2](https://github.com/espressif/esp-idf/releases/tag/v4.0-rc)*
 
 ## Building and Running the Example
 
